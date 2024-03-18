@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Mirror;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -128,10 +129,11 @@ public class CreateRoomUI : MonoBehaviour
 
     public void CreateRoom()
     {
-        var manager = AmongUsRoomManager.singleton;
+        var manager = NetworkManager.singleton as AmongUsRoomManager;
         //방 설정 작업 처리
-        //
-        //
+        manager.minPlayerCount = roomData.imposterCount == 1 ? 4 : roomData.imposterCount == 2 ? 7 : 9;
+        manager.imposterCount = roomData.imposterCount;
+        manager.maxConnections = roomData.maxPlayerCount;
         manager.StartHost();
     }
     public class CreateGameRoomData

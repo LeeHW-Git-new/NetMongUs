@@ -11,24 +11,39 @@ public class CharacterMover : NetworkBehaviour
     Animator animator;
 
     public bool isMoveable;
-    //public bool IsMoveable
-    //{
-    //    get { return isMoveable; }
-    //    set
-    //    {
-    //        if (!value)
-    //        {
-    //            //animator.SetBool("isMove", false);
-    //        }
-    //        isMoveable = value;
-    //    }
-    //}
+    public bool IsMoveable
+    {
+        get { return isMoveable; }
+        set
+        {
+            if (!value)
+            {
+                animator.SetBool("isMove", false);
+            }
+            isMoveable = value;
+        }
+    }
     [SyncVar]
     public float speed = 2f;
+    SpriteRenderer spriteRenderer;
+
+    [SyncVar(hook = nameof(SetPlayerColor_Hook))]
+    public EPlayerColor playerColor;
+    public void SetPlayerColor_Hook(EPlayerColor oldColor, EPlayerColor newColor)
+    {
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
+        }
+        spriteRenderer.material.SetColor("_PlayerColor", PlayerColor.GetColor(newColor));
+    }
 
     void Start()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.material.SetColor("_PlayerColor", PlayerColor.GetColor(playerColor));
         animator = GetComponent<Animator>();
+
         if (hasAuthority)
         {
             Camera cam = Camera.main;
@@ -45,7 +60,7 @@ public class CharacterMover : NetworkBehaviour
 
     public void Move()
     {
-        if (hasAuthority && isMoveable)
+        if (hasAuthority && IsMoveable)
         {
             bool isMove = false;
 

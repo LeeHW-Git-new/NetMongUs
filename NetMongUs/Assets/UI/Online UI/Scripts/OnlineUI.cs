@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
 public class OnlineUI : MonoBehaviour
 {
@@ -24,4 +25,16 @@ public class OnlineUI : MonoBehaviour
         }
     }
 
+    public void OnClickEnterGameRoomButton()
+    {
+        if (nicknameInputField.text != "")
+        {
+            var manager = AmongUsRoomManager.singleton;
+            manager.StartClient();
+        }
+        else
+        {
+            nicknameInputField.GetComponent<Animator>().SetTrigger("on");
+        }
+    }
 }

@@ -370,8 +370,26 @@ public class GameRuleStore : NetworkBehaviour
         }
     }
 
-    void Update()
+    public GameRuleData GetGameRuleData()
     {
-
+        return new GameRuleData()
+        {
+            anonymousVotes = anonymousVotes,
+            commonTask = commonTask,
+            complexTask = complexTask,
+            confirmEjects = confirmEjects,
+            crewSight = crewSight,
+            emergencyMeetings = emergencyMeetings,
+            emergencyMeetingsCooldown = emergencyMeetingsCooldown,
+            imposterSight = imposterSight,
+            killCooldown = killCooldown,
+            killRange = killRange,
+            meetingsTime = meetingsTime,
+            moveSpeed = moveSpeed,
+            simpleTask = simpleTask,
+            taskBarUpdates = taskBarUpdates,
+            visualTasks = visualTasks,
+            voteTime = voteTime
+        };
     }
 }

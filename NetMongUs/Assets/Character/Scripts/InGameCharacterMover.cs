@@ -14,6 +14,20 @@ public class InGameCharacterMover : CharacterMover
     [SyncVar]
     public EPlayerType playerType;
 
+    [ClientRpc]
+    public void RpcTeleport(Vector3 position)
+    {
+        transform.position = position;
+    }
+
+    public void SetNicknameColor(EPlayerType tpye)
+    {
+        if (playerType == EPlayerType.Imposter && tpye == EPlayerType.Imposter)
+        {
+            nicknameText.color = Color.red;
+        }
+    }
+
     public override void Start()
     {
         base.Start();

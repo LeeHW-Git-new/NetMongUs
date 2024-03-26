@@ -9,6 +9,12 @@ public class GameSystem : NetworkBehaviour
 
     List<InGameCharacterMover> players = new List<InGameCharacterMover>();
 
+    [SerializeField]
+    Transform spawnTransform;
+
+    [SerializeField]
+    float spawnDistance;
+
     public void AddPlayer(InGameCharacterMover player)
     {
         if(!players.Contains(player))
@@ -38,9 +44,44 @@ public class GameSystem : NetworkBehaviour
             }
         }
 
-        yield return new WaitForSeconds(1f);
+        for(int i = 0; i < players.Count; i++)
+        {
+            float radian = (2f * Mathf.PI) / players.Count;
+            radian *= i;
+            players[i].RpcTeleport( spawnTransform.position + (new Vector3(Mathf.Cos(radian), Mathf.Sin(radian), 0f) * spawnDistance));
+        }
 
+        yield return new WaitForSeconds(2f);
+        RpcStartGame();
+    }
+
+    [ClientRpc]
+    void RpcStartGame()
+    {
+        StartCoroutine(StartGameCoroutine());
+    }
+
+    IEnumerator StartGameCoroutine()
+    {
         yield return StartCoroutine(IngameUIManager.Instance.IngameIntroUI.ShowIntroSequence());
+
+        InGameCharacterMover myCharacter = null;
+        foreach(var player in players)
+        {
+            if(player.hasAuthority)
+            {
+                myCharacter = player;
+                break;
+            }
+        }
+
+        foreach(var player in players)
+        {
+            player.SetNicknameColor(myCharacter.playerType);
+        }
+
+        yield return new WaitForSeconds(3f);
+        IngameUIManager.Instance.IngameIntroUI.Close();
     }
 
     public List<InGameCharacterMover> GetPlayerList()
@@ -55,7 +96,10 @@ public class GameSystem : NetworkBehaviour
 
     void Start()
     {
-        StartCoroutine(GameReady());
+        if(isServer)
+        {
+            StartCoroutine(GameReady());
+        }
     }
 
 

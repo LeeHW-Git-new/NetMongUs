@@ -6,7 +6,7 @@ using Mirror;
 
 public class CharacterMover : NetworkBehaviour
 {
-    Animator animator;
+    protected Animator animator;
 
     public bool isMoveable;
     public bool IsMoveable
@@ -30,7 +30,7 @@ public class CharacterMover : NetworkBehaviour
     [SerializeField]
     float cameraSize = 2.5f;
 
-    SpriteRenderer spriteRenderer;
+    protected SpriteRenderer spriteRenderer;
 
     [SyncVar(hook = nameof(SetPlayerColor_Hook))]
     public EPlayerColor playerColor;

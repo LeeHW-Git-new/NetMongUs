@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 using Mirror;
 
 public class GameSystem : NetworkBehaviour
@@ -15,6 +16,22 @@ public class GameSystem : NetworkBehaviour
     [SerializeField]
     float spawnDistance;
 
+    [SyncVar]
+    public float killCooldown;
+
+    [SyncVar]
+    public int killRange;
+
+    [SerializeField]
+    Light2D shadowLight;
+
+    [SerializeField]
+    Light2D lightMapLight;
+
+    [SerializeField]
+    Light2D gloabalLight;
+
+
     public void AddPlayer(InGameCharacterMover player)
     {
         if(!players.Contains(player))
@@ -26,7 +43,10 @@ public class GameSystem : NetworkBehaviour
     IEnumerator GameReady()
     {
         var manager = NetworkManager.singleton as AmongUsRoomManager;
-        while(manager.roomSlots.Count != players.Count)
+        killCooldown = manager.gameRuleData.killCooldown;
+        killRange = (int)manager.gameRuleData.killRange;
+
+        while (manager.roomSlots.Count != players.Count)
         {
             yield return null;
         }
@@ -53,6 +73,11 @@ public class GameSystem : NetworkBehaviour
 
         yield return new WaitForSeconds(2f);
         RpcStartGame();
+
+        foreach(var player in players)
+        {
+            player.SetKillCooldown();
+        }
     }
 
     [ClientRpc]
@@ -102,9 +127,19 @@ public class GameSystem : NetworkBehaviour
         }
     }
 
-
-    void Update()
+    public void ChangeLightMode(EPlayerType type)
     {
-        
+        if(type == EPlayerType.Ghost)
+        {
+            lightMapLight.lightType = Light2D.LightType.Global;
+            shadowLight.intensity = 0f;
+            gloabalLight.intensity = 1f;
+        }
+        else
+        {
+            lightMapLight.lightType = Light2D.LightType.Point;
+            shadowLight.intensity = 0.5f;
+            gloabalLight.intensity = 0.5f;
+        }
     }
 }
